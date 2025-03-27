@@ -10,6 +10,7 @@ import java.util.Optional;
 
 @Service
 public class BankService {
+
     private final BankRepo bankRepo;
     @Autowired
     BankService(BankRepo bankRepo){
@@ -21,20 +22,25 @@ public class BankService {
     }
 
     @Transactional
+    public void removeBank(String swiftCode){
+        bankRepo.deleteById(swiftCode);
+    }
+
+    @Transactional
     public void saveBanks(List<BankEntity> banks){
         bankRepo.saveAll(banks);
     }
 
-    public BankEntity getBank(String swift){
-        return bankRepo.findById(swift).orElse(null);
+    public Optional<BankEntity> getBank(String swift){
+        return bankRepo.findById(swift);
+    }
+
+    public Integer getBankRepoSize(){
+        return bankRepo.findAll().size();
     }
 
     public List<BankEntity> getBanksByISO2(String iso2){
         return bankRepo.findAllByISO2(iso2);
-    }
-
-    public Optional<BankEntity> getBankBySwift(String swift){
-        return bankRepo.findById(swift);
     }
 
 }

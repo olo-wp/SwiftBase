@@ -14,19 +14,19 @@ import lombok.Setter;
 @Data
 @Table(name = "banks")
 public class BankEntity {
-    @Id
-    @Column(name = "swift_code")
-    private String swift_code;
-    @Column(name = "ISO2")
-    private String ISO2;
-    @Column(name = "bank_name")
-    private String bank_name;
     @Column(name = "address")
     private String address;
-    @Column(name = "country")
-    private String country;
-    @Column(name = "is_hq")
-    private Boolean is_hq;
+    @Column(name = "bankName")
+    private String bankName;
+    @Column(name = "countryISO2")
+    private String countryISO2;
+    @Column(name = "countryName")
+    private String countryName;
+    @Column(name = "isHeadquater")
+    private Boolean isHeadquater;
+    @Id
+    @Column(name = "swiftCode")
+    private String swiftCode;
     public BankEntity() {
 
     }

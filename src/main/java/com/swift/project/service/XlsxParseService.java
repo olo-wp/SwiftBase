@@ -47,16 +47,16 @@ public class XlsxParseService {
                 if(row.getRowNum() == 0) continue;
                 BankEntity bankEntity = new BankEntity();
                 try {
-                    bankEntity.setISO2(row.getCell(0).getStringCellValue());
-                    bankEntity.setSwift_code(row.getCell(1).getStringCellValue());
-                    bankEntity.setCountry(row.getCell(6).getStringCellValue());
-                    bankEntity.setBank_name(row.getCell(3).getStringCellValue());
-                    bankEntity.setAddress(row.getCell(4).getStringCellValue());
+                    bankEntity.setCountryISO2(row.getCell(0).getStringCellValue().strip());
+                    bankEntity.setSwiftCode(row.getCell(1).getStringCellValue().strip());
+                    bankEntity.setCountryName(row.getCell(6).getStringCellValue().strip());
+                    bankEntity.setBankName(row.getCell(3).getStringCellValue().strip());
+                    bankEntity.setAddress(row.getCell(4).getStringCellValue().strip());
                 } catch (NullPointerException e){
                     continue;
                 }
-                boolean ishq = bankEntity.getSwift_code().endsWith("XXX");
-                bankEntity.setIs_hq(ishq);
+                boolean ishq = bankEntity.getSwiftCode().endsWith("XXX");
+                bankEntity.setIsHeadquater(ishq);
                 banks.add(bankEntity);
             }
         }

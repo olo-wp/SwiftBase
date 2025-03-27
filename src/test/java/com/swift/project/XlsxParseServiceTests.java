@@ -19,8 +19,7 @@ public class XlsxParseServiceTests {
     @Test
     void testPostConstructParsing(){
         assert bankService.getBankRepoSize() == 1061;
-        /*maybe this is not the most efficient test, as it uses constant
-        and so on, but it will do for now
-        */
+        //maybe this is not the most efficient test, as it uses constant
+        // and so on, but the xlsx file has 1061 content rows, so it is justified
     }
 }

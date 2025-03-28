@@ -1,10 +1,10 @@
-package com.swift.project.UnitTests;
+package com.swift.project;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ProjectApplicationTests {
+class ProjectApplicationUnitTests {
 
 	@Test
 	void contextLoads() {

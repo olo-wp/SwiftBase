@@ -4,6 +4,8 @@ import com.swift.project.DTOs.BanksByCountryDTO;
 import com.swift.project.DTOs.BranchDTO;
 import com.swift.project.DTOs.HqDTO;
 import com.swift.project.data.BankEntity;
+import com.swift.project.exceptions.BankAlreadyInBaseException;
+import com.swift.project.exceptions.BankNotFoundException;
 import com.swift.project.repo.BankRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +23,56 @@ public class BankService {
         this.bankRepo = bankRepo;
     }
 
-    public HqDTO getHqDTO(String swift) throws RuntimeException{
+    @Transactional
+    public void saveBank(BankEntity bank) throws BankAlreadyInBaseException {
+        Optional<BankEntity> b = bankRepo.findById(bank.getSwiftCode());
+        if(b.isPresent()) throw new BankAlreadyInBaseException(bank.getSwiftCode());
+        bankRepo.save(bank);
+    }
+
+    @Transactional
+    public void removeBank(String swift) throws BankNotFoundException{
+        Optional<BankEntity> bank = bankRepo.findById(swift);
+        if(bank.isEmpty()) throw new BankNotFoundException(swift, "Swift Code");
+        bankRepo.deleteById(swift);
+    }
+    public Optional<BankEntity> getBank(String swift) throws BankNotFoundException{
+        Optional<BankEntity> bank = bankRepo.findById(swift);
+        if(bank.isEmpty()) throw new BankNotFoundException(swift, "Swift Code");
+        return bank;
+    }
+
+    public Integer getBankRepoSize(){
+        return bankRepo.findAll().size();
+    }
+
+    public BanksByCountryDTO getBanksByCountryDTO(String iso2) throws BankNotFoundException{
+        List<BankEntity> banks = bankRepo.findAllBycountryISO2(iso2);
+        if (banks.isEmpty()) throw new BankNotFoundException(iso2, "ISO2");
+
+        String countryISO2 = banks.get(0).getCountryISO2();
+        String countryName = banks.get(0).getCountryName();
+
+        List<BranchDTO> banksInCountry = banks.stream().map(bank -> new BranchDTO(
+                    bank.getAddress(),
+                    bank.getBankName(),
+                    bank.getCountryISO2(),
+                    bank.getIsHeadquater(),
+                    bank.getSwiftCode()
+                )).collect(Collectors.toList());
+        return new BanksByCountryDTO(
+                countryISO2,
+                countryName,
+                banksInCountry
+        );
+    }
+
+    public HqDTO getHqDTO(String swift) throws BankNotFoundException{
 
         List<BankEntity> banks = bankRepo.findBySwiftCodeStartingWith(swift.substring(0,8));
 
         BankEntity hq = banks.stream().filter(BankEntity::getIsHeadquater).findFirst()
-                .orElseThrow(() -> new RuntimeException("hq not found"));
+                .orElseThrow(() -> new BankNotFoundException(swift, "Swift Code"));
 
         List<BranchDTO> branches = banks.stream().map(bank -> new BranchDTO(
                 bank.getAddress(),
@@ -44,43 +90,6 @@ public class BankService {
                 hq.getIsHeadquater(),
                 hq.getSwiftCode(),
                 branches
-        );
-    }
-    @Transactional
-    public void saveBank(BankEntity bank){
-        bankRepo.save(bank);
-    }
-
-    @Transactional
-    public void removeBank(String swiftCode){
-        bankRepo.deleteById(swiftCode);
-    }
-    public Optional<BankEntity> getBank(String swift){
-        return bankRepo.findById(swift);
-    }
-
-    public Integer getBankRepoSize(){
-        return bankRepo.findAll().size();
-    }
-
-    public BanksByCountryDTO getBanksByCountryDTO(String iso2) throws RuntimeException{
-        List<BankEntity> banks = bankRepo.findAllBycountryISO2(iso2);
-        if (banks.isEmpty()) throw new RuntimeException("no bank with ISO2: " + iso2 + "found");
-
-        String countryISO2 = banks.get(0).getCountryISO2();
-        String countryName = banks.get(0).getCountryName();
-
-        List<BranchDTO> banksInCountry = banks.stream().map(bank -> new BranchDTO(
-                    bank.getAddress(),
-                    bank.getBankName(),
-                    bank.getCountryISO2(),
-                    bank.getIsHeadquater(),
-                    bank.getSwiftCode()
-                )).collect(Collectors.toList());
-        return new BanksByCountryDTO(
-                countryISO2,
-                countryName,
-                banksInCountry
         );
     }
 

@@ -1,4 +1,4 @@
-package com.swift.project;
+package com.swift.project.UnitTests;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

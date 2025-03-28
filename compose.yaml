@@ -1,5 +1,28 @@
 
 services:
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spring_app
+    restart: no
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: false
+      LOGGING_LEVEL_ORG_HIBERNATE_SQL: OFF
+      LOGGING_LEVEL_ORG_HIBERNATE_TYPE_DESCRIPTOR_SQL_BASICBINDER: OFF
+      server.servlet.context-path: /
+    ports:
+      - "8080:8080"
+    networks:
+      - postgres_network
+
   postgres:
     image: postgres:16.0
     container_name: postgresql

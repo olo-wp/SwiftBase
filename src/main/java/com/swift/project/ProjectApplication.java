@@ -12,7 +12,7 @@ import org.springframework.context.annotation.ComponentScan;
 public class ProjectApplication {
 
 	public static void main(String[] args) {
-
+        System.out.println("app started");
         SpringApplication.run(ProjectApplication.class, args);
 	}
 

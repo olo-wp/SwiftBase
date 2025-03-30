@@ -1,5 +1,5 @@
 INSERT INTO banks(
-    swift_code, address, bank_name, countryiso2, country_name, is_headquater
+    swift_code, address, bank_name, countryiso2, country_name, is_headquarter
 ) VALUES
     ('AAISALTRXXX', 'HYRJA 3 RR. DRITAN HOXHA ND. 11 TIRANA, TIRANA, 1023','UNITED BANK OF ALBANIA SH.A', 'AL', 'ALBANIA', true),
     ('ABIEBGS1XXX', 'TSAR ASEN 20  VARNA, VARNA, 9002','ABV INVESTMENTS LTD', 'AL', 'BULGARIA', true),

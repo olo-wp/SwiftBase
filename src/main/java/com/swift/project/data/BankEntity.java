@@ -5,29 +5,25 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
+
 @Entity
 @Data
 @Table(name = "banks")
+@NoArgsConstructor
 public class BankEntity {
     @Column(name = "address")
     private String address;
-    @Column(name = "bankName")
+    @Column(name = "bank_Name")
     private String bankName;
     @Column(name = "countryISO2")
     private String countryISO2;
-    @Column(name = "countryName")
+    @Column(name = "country_Name")
     private String countryName;
-    @Column(name = "isHeadquater")
-    private Boolean isHeadquater;
+    @Column(name = "is_Headquarter")
+    private Boolean isHeadquarter;
     @Id
-    @Column(name = "swiftCode")
+    @Column(name = "swift_Code")
     private String swiftCode;
-    public BankEntity() {
-
-    }
 }

@@ -3,22 +3,23 @@ package com.swift.project.controllers;
 import com.swift.project.DTOs.BanksByCountryDTO;
 import com.swift.project.DTOs.HqDTO;
 import com.swift.project.DTOs.Message;
-import com.swift.project.data.BankEntity;
+import com.swift.project.DTOs.SingleBankDTO;
 import com.swift.project.service.BankService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
-
 @org.springframework.web.bind.annotation.RestController
 @RequestMapping("/v1/swift-codes")
-public class RestController {
+public class BankRestController {
+    private static final Logger logger = LoggerFactory.getLogger(BankRestController.class);
 
     private final BankService bankService;
-    public RestController(BankService bankService){
-        System.out.println("REST CONTROL START");
+
+    public BankRestController(BankService bankService) {
+        logger.info("BANK REST CONTROL START");
         this.bankService = bankService;
     }
     @GetMapping("/country/{countryISO2code}")
@@ -29,9 +30,8 @@ public class RestController {
 
     @GetMapping("/{swift}")
     public ResponseEntity<Object> getBank(@PathVariable String swift) {
-        Optional<BankEntity> bank = bankService.getBank(swift);
-
-        if(bank.isPresent() && !bank.get().getIsHeadquater()) return new ResponseEntity<>(bank.get(), HttpStatus.OK);
+        SingleBankDTO singleBankDTO = bankService.getBank(swift);
+        if (!singleBankDTO.isHeadquarter()) return new ResponseEntity<>(singleBankDTO, HttpStatus.OK);
         HqDTO hqDTO = bankService.getHqDTO(swift);
         return new ResponseEntity<>(hqDTO, HttpStatus.OK);
         }
@@ -43,9 +43,9 @@ public class RestController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Object> addBank(@Valid @RequestBody BankEntity bank){
-        bankService.saveBank(bank);
-        Message mes = new Message("Bank with Swift Code: " + bank.getSwiftCode() + "has been successfully added");
+    public ResponseEntity<Object> addBank(@Valid @RequestBody SingleBankDTO singleBankDTO) {
+        bankService.saveBank(singleBankDTO);
+        Message mes = new Message("Bank with Swift Code: " + singleBankDTO.getSwiftCode() + "has been successfully added");
         return new ResponseEntity<>(mes, HttpStatus.OK);
     }
 }

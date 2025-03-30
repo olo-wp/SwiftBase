@@ -9,6 +9,6 @@ public class BranchDTO {
     private String address;
     private String bankName;
     private String countryISO2;
-    private Boolean isHeadquarter;
+    private boolean isHeadquarter;
     private String swiftCode;
 }

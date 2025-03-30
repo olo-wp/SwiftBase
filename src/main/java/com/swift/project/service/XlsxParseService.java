@@ -1,14 +1,14 @@
 package com.swift.project.service;
 
 import com.swift.project.data.BankEntity;
-import com.swift.project.repo.BankRepo;
+import com.swift.project.other.SwiftCodeMethods;
+import com.swift.project.repo.BankRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
@@ -17,13 +17,16 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.swift.project.other.constants.CONTENT_SHEET;
+import static com.swift.project.other.constants.DOCUMENT_HEAD;
+
+
 @Service
 public class XlsxParseService {
-    private final BankRepo bankRepo;
+    private final BankRepository bankRepository;
 
-    @Autowired
-    public XlsxParseService(BankRepo bankRepo){
-        this.bankRepo = bankRepo;
+    public XlsxParseService(BankRepository bankRepository) {
+        this.bankRepository = bankRepository;
     }
 
     @PostConstruct
@@ -38,13 +41,14 @@ public class XlsxParseService {
 
     @Transactional
     public void importXlsx(String filePath) throws IOException {
+
         List<BankEntity> banks = new ArrayList<>();
 
         InputStream is = new ClassPathResource(filePath).getInputStream();
         try(Workbook workbook = new XSSFWorkbook(is)){
-            Sheet sheet = workbook.getSheetAt(0);
+            Sheet sheet = workbook.getSheetAt(CONTENT_SHEET);
             for(Row row : sheet){
-                if(row.getRowNum() == 0) continue;
+                if (row.getRowNum() == DOCUMENT_HEAD) continue;
                 BankEntity bankEntity = new BankEntity();
                 try {
                     bankEntity.setCountryISO2(row.getCell(0).getStringCellValue().strip());
@@ -55,11 +59,10 @@ public class XlsxParseService {
                 } catch (NullPointerException e){
                     continue;
                 }
-                boolean ishq = bankEntity.getSwiftCode().endsWith("XXX");
-                bankEntity.setIsHeadquater(ishq);
+                bankEntity.setIsHeadquarter(SwiftCodeMethods.representsHQ(bankEntity.getSwiftCode()));
                 banks.add(bankEntity);
             }
         }
-        bankRepo.saveAll(banks);
+        bankRepository.saveAll(banks);
     }
 }

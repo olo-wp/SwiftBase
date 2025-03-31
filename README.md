@@ -11,13 +11,6 @@ mvn clean package
 docker compose up -d
 ```
 
-If you wish to run without testing:
-
-```
-mvn clean package -Dskiptests
-docker compose up -d
-```
-
 ### Endpoints
 
 1. GET: /v1/swift-codes/{swift-code}

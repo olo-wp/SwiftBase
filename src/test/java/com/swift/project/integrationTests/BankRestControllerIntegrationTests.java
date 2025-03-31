@@ -104,7 +104,7 @@ public class BankRestControllerIntegrationTests {
         );
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertFalse(response.getBody().isHeadquarter());
+        assertFalse(response.getBody().getIsHeadquarter());
         assertEquals("BREXPLPWWAL", response.getBody().getSwiftCode());
 
         ResponseEntity<HqDTO> response2 = restTemplate.exchange(
@@ -115,7 +115,7 @@ public class BankRestControllerIntegrationTests {
         );
         assertEquals(HttpStatus.OK, response2.getStatusCode());
         assertNotNull(response2.getBody());
-        assertTrue(response2.getBody().isHeadquarter());
+        assertTrue(response2.getBody().getIsHeadquarter());
         assertEquals("BREXPLPWXXX", response2.getBody().getSwiftCode());
         assertEquals(3, response2.getBody().getBranches().size());
     }

@@ -35,7 +35,7 @@ public class BankService {
         bank.setAddress(singleBankDTO.getAddress());
         bank.setCountryISO2(singleBankDTO.getCountryISO2().toUpperCase());
         bank.setCountryName(singleBankDTO.getCountryName().toUpperCase());
-        bank.setIsHeadquarter(singleBankDTO.isHeadquarter());
+        bank.setIsHeadquarter(singleBankDTO.getIsHeadquarter());
         bank.setSwiftCode(singleBankDTO.getSwiftCode());
         return bank;
     }
@@ -50,7 +50,7 @@ public class BankService {
 
         if (isISO2CodeIllegal(singleBankDTO.getCountryISO2())) throw new IllegalISO2CodeException();
 
-        if (!SwiftCodeMethods.isProperHqSuffixMapping(singleBankDTO.getSwiftCode(), singleBankDTO.isHeadquarter()))
+        if (!SwiftCodeMethods.isProperHqSuffixMapping(singleBankDTO.getSwiftCode(), singleBankDTO.getIsHeadquarter()))
             throw new IllegalSwiftCodeToHqMapping();
 
         BankEntity bank = mapSingleBankDTOtoBankEntity(singleBankDTO);

@@ -1,6 +1,6 @@
 Swift Code RestAPI 
 ----
-This is project implements endpoints for querying banks by their swift codes and their ISO2 country codes.
+This is project implements endpoints for querying banks by their swift codes and their ISO2 country codes. Endpoints are accessible at localhost:8080
 
 ### How to run ?
 Requirements: Maven, Docker
@@ -45,6 +45,8 @@ docker compose up -d
 
 4. DELETE: /v1/swift-codes/{swift-code}
     - deletes a bank from the database.
+
+
 
 
    

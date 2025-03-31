@@ -34,7 +34,7 @@ public class BankRestController {
     @GetMapping("/{swift}")
     public ResponseEntity<Object> getBank(@PathVariable String swift) {
         SingleBankDTO singleBankDTO = bankService.getBank(swift);
-        if (!singleBankDTO.isHeadquarter()) return new ResponseEntity<>(singleBankDTO, HttpStatus.OK);
+        if (!singleBankDTO.getIsHeadquarter()) return new ResponseEntity<>(singleBankDTO, HttpStatus.OK);
         HqDTO hqDTO = bankService.getHqDTO(swift);
         return new ResponseEntity<>(hqDTO, HttpStatus.OK);
     }

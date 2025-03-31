@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@org.springframework.web.bind.annotation.RestController
+@RestController
 @RequestMapping("/v1/swift-codes")
 public class BankRestController {
     private static final Logger logger = LoggerFactory.getLogger(BankRestController.class);
@@ -34,7 +34,9 @@ public class BankRestController {
     @GetMapping("/{swift}")
     public ResponseEntity<Object> getBank(@PathVariable String swift) {
         SingleBankDTO singleBankDTO = bankService.getBank(swift);
-        if (!singleBankDTO.getIsHeadquarter()) return new ResponseEntity<>(singleBankDTO, HttpStatus.OK);
+        if (!singleBankDTO.getIsHeadquarter()){
+            return new ResponseEntity<>(singleBankDTO, HttpStatus.OK);
+        }
         HqDTO hqDTO = bankService.getHqDTO(swift);
         return new ResponseEntity<>(hqDTO, HttpStatus.OK);
     }

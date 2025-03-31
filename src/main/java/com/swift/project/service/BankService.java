@@ -25,7 +25,7 @@ public class BankService {
 
     private final BankRepository bankRepository;
 
-    BankService(BankRepository bankRepository) {
+    public BankService(BankRepository bankRepository) {
         this.bankRepository = bankRepository;
     }
 

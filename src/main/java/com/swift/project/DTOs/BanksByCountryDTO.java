@@ -12,5 +12,5 @@ import java.util.List;
 public class BanksByCountryDTO {
     private String countryISO2;
     private String countryName;
-    List<BranchDTO> countryBanks;
+    private List<BranchDTO> countryBanks;
 }

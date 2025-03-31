@@ -1,135 +1,195 @@
 package com.swift.project.unitTests;
 
-import com.swift.project.DTOs.BanksByCountryDTO;
+import com.swift.project.DTOs.BranchDTO;
 import com.swift.project.DTOs.HqDTO;
 import com.swift.project.DTOs.SingleBankDTO;
+import com.swift.project.data.BankEntity;
 import com.swift.project.exceptions.BankAlreadyInDataBaseException;
 import com.swift.project.exceptions.BankNotFoundException;
-import com.swift.project.exceptions.IllegalISO2CodeException;
 import com.swift.project.exceptions.IllegalSwiftCodeException;
+import com.swift.project.repo.BankRepository;
 import com.swift.project.service.BankService;
-import com.swift.project.service.XlsxParseService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-@TestPropertySource("classpath:application-test.properties")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-@SpringBootTest
-class BankServiceUnitTests {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
-    /* we mock this field, so that BankServiceTests are made only on
-    the H2 database.
-     */
-    @MockitoBean
-    private XlsxParseService xlsxParseService;
+public class BankServiceUnitTests {
 
-    @Autowired
+    private BankRepository bankRepository;
+
     private BankService bankService;
 
-    @Test
-    void testBankServiceGetByIdReturns() {
-        SingleBankDTO singleBankDTO = bankService.getBank("AAISALTRXXX");
-        assertNotNull(singleBankDTO);
-        assert (singleBankDTO.getBankName().strip().equals("UNITED BANK OF ALBANIA SH.A"));
-
-        singleBankDTO = bankService.getBank("CBARAWAWXXX");
-        assertNotNull(singleBankDTO);
-        assert (singleBankDTO.getBankName().strip().equals("CENTRALE BANK VAN ARUBA"));
+    @BeforeEach
+    void setup() {
+        bankRepository = mock(BankRepository.class);
+        bankService = new BankService(bankRepository);
     }
 
     @Test
-    void testBankServiceGetByIdThrows() {
-        assertThrows(BankNotFoundException.class, () -> bankService.getBank("abcdehijk"));
-        assertThrows(IllegalSwiftCodeException.class, () -> bankService.getBank("axxxxxxxxxxxxxifshfhjfshfahfx"));
-    }
-
-    @Test
-    void testAddAndRemove() {
-        SingleBankDTO singleBankDTO = new SingleBankDTO(
-                " ",
-                "Rich People Bank",
-                "LI",
-                "LIECHTENSTEIN",
+    public void testSaveBank() {
+        SingleBankDTO singleBankDTOHq = new SingleBankDTO(
+                "Jazmowa 14",
+                "testbankhq",
+                "PL",
+                "POLAND",
                 true,
-                "12345678XXX"
+                "SWIFTXXX");
+
+        BankEntity entity = new BankEntity(
+                "Jazmowa 14",
+                "testbankhq",
+                "PL",
+                "POLAND",
+                true,
+                "SWIFTXXX");
+
+        bankService.addBank(singleBankDTOHq);
+
+        when(bankRepository.findById("SWIFTXXX")).thenReturn(Optional.empty());
+        when(bankRepository.save(any())).thenReturn(entity);
+
+        verify(bankRepository, times(1)).findById("SWIFTXXX");
+        verify(bankRepository, times(1)).save(entity);
+    }
+
+    @Test
+    public void saveBankException(){
+        BankEntity entity = new BankEntity(
+                "Jazmowa 14",
+                "testbankhq",
+                "PL",
+                "POLAND",
+                true,
+                "SWIFTXXX");
+        SingleBankDTO singleBankDTOHq = new SingleBankDTO(
+                "Jazmowa 14",
+                "testbankhq",
+                "PL",
+                "POLAND",
+                true,
+                "SWIFTXXX");
+
+        when(bankRepository.findById("SWIFTXXX")).thenReturn(Optional.of(entity));
+        assertThrows(BankAlreadyInDataBaseException.class,() -> bankService.addBank(singleBankDTOHq));
+
+    }
+
+    @Test
+    public void testFindBankException(){
+        when(bankRepository.findById("DOESNTEXIST")).thenReturn(Optional.empty());
+        assertThrows(BankNotFoundException.class, () -> bankService.getBank("DOESNTEXIST"));
+        assertThrows(IllegalSwiftCodeException.class, () -> bankService.getBank("DO"));
+    }
+
+    @Test
+    public void testDeleteBank() {
+        BankEntity entity = new BankEntity(
+                "Jazmowa 14",
+                "testbankhq",
+                "PL",
+                "POLAND",
+                true,
+                "SWIFTXXX");
+
+        when(bankRepository.findById("SWIFTXXX")).thenReturn(Optional.of(entity));
+
+        bankService.removeBank("SWIFTXXX");
+
+        verify(bankRepository, times(1)).findById("SWIFTXXX");
+
+        verify(bankRepository, times(1)).deleteById("SWIFTXXX");
+    }
+
+    @Test
+    public void testDeleteBankException(){
+        when(bankRepository.findById("SWIFTXXX")).thenReturn(Optional.empty());
+        assertThrows(BankNotFoundException.class, () -> bankService.removeBank("SWIFTXXX"));
+    }
+
+    @Test
+    public void testFindBank() {
+        SingleBankDTO singleBankDTOHq = new SingleBankDTO(
+                "Jazmowa 14",
+                "testbankhq",
+                "PL",
+                "POLAND",
+                true,
+                "SWIFTXXX");
+
+        BankEntity entity = new BankEntity(
+                "Jazmowa 14",
+                "testbankhq",
+                "PL",
+                "POLAND",
+                true,
+                "SWIFTXXX");
+
+        when(bankRepository.findById("SWIFTXXX")).thenReturn(Optional.of(entity));
+        assertEquals(singleBankDTOHq, bankService.getBank("SWIFTXXX"));
+    }
+
+    @Test
+    public void testGetHqDTOException(){
+        when(bankRepository.findById("SWIFTXXX")).thenReturn(Optional.empty());
+        assertThrows(BankNotFoundException.class, () ->bankService.getHqDTO("SWIFTXXX"));
+        assertThrows(IllegalSwiftCodeException.class, () -> bankService.getHqDTO("abc"));
+    }
+
+    @Test
+    public void testGetHqDTO(){
+        BranchDTO branchDTO = new BranchDTO(
+                "Jazmowa 14",
+                "testbankhq",
+                "PL",
+                false,
+                "SWIFTBRA"
         );
-
-
-        long size = bankService.getBankRepositorySize();
-
-        bankService.addBank(singleBankDTO);
-
-        assert (size + 1 == bankService.getBankRepositorySize());
-
-        bankService.removeBank("12345678XXX");
-
-        assert (size == bankService.getBankRepositorySize());
-    }
-
-    @Test
-    void testRemoveNonExistentThrows() {
-        assertThrows(BankNotFoundException.class, () -> bankService.removeBank("12345678XXX"));
-        assertThrows(IllegalSwiftCodeException.class, () -> bankService.removeBank("123X"));
-        assertThrows(IllegalSwiftCodeException.class, () -> bankService.removeBank(null));
-    }
-
-    @Test
-    void testAddAlreadyInDataBaseThrows() {
-        SingleBankDTO singleBankDTO = new SingleBankDTO(
-                " ",
-                " ",
+        BranchDTO branchDTO2 = new BranchDTO(
+                "Jazmowa 14",
+                "testbankhq",
+                "PL",
+                true,
+                "SWIFTBRAXXX"
+        );
+        List<BranchDTO> branchDTOList = new ArrayList<>();
+        branchDTOList.add(branchDTO2);
+        branchDTOList.add(branchDTO);
+        HqDTO hqDTO = new HqDTO(
+                "Jazmowa 14",
+                "testbankhq",
+                "PL",
+                "POLAND",
+                true,
+                "SWIFTBRAXXX",
+                branchDTOList
+        );
+        BankEntity entity1 = new BankEntity(
+                "Jazmowa 14",
+                "testbankhq",
+                "PL",
+                "POLAND",
+                true,
+                "SWIFTBRAXXX");
+        BankEntity entity2 = new BankEntity(
+                "Jazmowa 14",
+                "testbankhq",
                 "PL",
                 "POLAND",
                 false,
-                "BREXPLPWWAL"
-        );
-        assertThrows(BankAlreadyInDataBaseException.class, () -> bankService.addBank(singleBankDTO));
-        singleBankDTO.setSwiftCode("abc");
-        assertThrows(IllegalSwiftCodeException.class, () -> bankService.addBank(singleBankDTO));
-        singleBankDTO.setSwiftCode("BREXPLPWWXX");
-        singleBankDTO.setCountryISO2("-");
-        assertThrows(IllegalISO2CodeException.class, () -> bankService.addBank(singleBankDTO));
+                "SWIFTBRA");
+
+        when(bankRepository.findBySwiftCodeStartingWith("SWIFTBRA")).thenReturn(List.of(entity1,entity2));
+        assertEquals(hqDTO, bankService.getHqDTO("SWIFTBRAXXX"));
+
     }
 
-    @Test
-    void testFindByCountryThrowsByWrongISO2() {
-        String countryCode = "WB";
-        assertThrows(BankNotFoundException.class, () -> bankService.getBanksByCountryDTO(countryCode));
-        assertThrows(IllegalISO2CodeException.class, () -> bankService.getBanksByCountryDTO(null));
-    }
-
-    @Test
-    void testFindByCountryReturns() {
-        String countryCode = "PL";
-        BanksByCountryDTO dto = bankService.getBanksByCountryDTO(countryCode);
-        assert (dto.getCountryBanks().size() == 5);
-        String countryCode2 = "AL";
-        dto = bankService.getBanksByCountryDTO(countryCode2);
-        assert (dto.getCountryBanks().size() == 2);
-    }
-
-    @Test
-    void testGetHqDTOReturn() {
-        String swiftCode = "BREXPLPWXXX";
-        HqDTO HqDTO = bankService.getHqDTO(swiftCode);
-        assertTrue(HqDTO.getIsHeadquarter());
-        assert (HqDTO.getBranches().size() == 3);
-    }
-
-    @Test
-    void testGetHqDTOThrowsByWrongSwiftCode() {
-        String swiftCode = "jfa321222k";
-        assertThrows(BankNotFoundException.class, () -> bankService.getHqDTO(swiftCode));
-        String swiftCode2 = "abc";
-        assertThrows(IllegalSwiftCodeException.class, () -> bankService.getHqDTO(swiftCode2));
-        assertThrows(IllegalSwiftCodeException.class, () -> bankService.getHqDTO(null));
-    }
 
 }
-

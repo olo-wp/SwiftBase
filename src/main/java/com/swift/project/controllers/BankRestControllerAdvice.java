@@ -2,7 +2,8 @@ package com.swift.project.controllers;
 
 import com.swift.project.exceptions.BankAlreadyInDataBaseException;
 import com.swift.project.exceptions.BankNotFoundException;
-import com.swift.project.exceptions.WrongSwiftCodeException;
+import com.swift.project.exceptions.IllegalISO2CodeException;
+import com.swift.project.exceptions.IllegalSwiftCodeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -20,7 +21,7 @@ public class BankRestControllerAdvice {
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     public final String bankAlreadyInBaseHandler(RuntimeException e){return e.getMessage();}
 
-    @ExceptionHandler(WrongSwiftCodeException.class)
+    @ExceptionHandler({IllegalSwiftCodeException.class, IllegalISO2CodeException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public final String WrongSwiftCodeHandler(RuntimeException e){return e.getMessage();}
 

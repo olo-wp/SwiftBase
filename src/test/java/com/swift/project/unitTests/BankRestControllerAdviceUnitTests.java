@@ -3,14 +3,13 @@ package com.swift.project.unitTests;
 import com.swift.project.controllers.BankRestControllerAdvice;
 import com.swift.project.exceptions.BankAlreadyInDataBaseException;
 import com.swift.project.exceptions.BankNotFoundException;
-import com.swift.project.exceptions.WrongSwiftCodeException;
+import com.swift.project.exceptions.IllegalSwiftCodeException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BankRestControllerAdviceUnitTests {
     private final BankRestControllerAdvice advice = new BankRestControllerAdvice();
-
 
     @Test
     void testHandleBankNotFoundException() {
@@ -30,7 +29,7 @@ public class BankRestControllerAdviceUnitTests {
 
     @Test
     void testHandleWrongSwiftCodeException() {
-        WrongSwiftCodeException exception = new WrongSwiftCodeException();
+        IllegalSwiftCodeException exception = new IllegalSwiftCodeException();
         String response = advice.WrongSwiftCodeHandler(exception);
         String testHandleWrongSwiftCodeExceptionErrorMessage = "Swift Code must be 8-11 characters long";
         assertEquals(testHandleWrongSwiftCodeExceptionErrorMessage, response);

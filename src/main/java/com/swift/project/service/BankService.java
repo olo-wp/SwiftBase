@@ -7,7 +7,8 @@ import com.swift.project.DTOs.SingleBankDTO;
 import com.swift.project.data.BankEntity;
 import com.swift.project.exceptions.BankAlreadyInDataBaseException;
 import com.swift.project.exceptions.BankNotFoundException;
-import com.swift.project.exceptions.WrongSwiftCodeException;
+import com.swift.project.exceptions.IllegalISO2CodeException;
+import com.swift.project.exceptions.IllegalSwiftCodeException;
 import com.swift.project.other.SwiftCodeMethods;
 import com.swift.project.repo.BankRepository;
 import jakarta.transaction.Transactional;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.swift.project.other.constants.ISO2_LENGTH;
 
 @Service
 public class BankService {
@@ -30,16 +33,21 @@ public class BankService {
         BankEntity bank = new BankEntity();
         bank.setBankName(singleBankDTO.getBankName());
         bank.setAddress(singleBankDTO.getAddress());
-        bank.setCountryISO2(singleBankDTO.getCountryISO2());
-        bank.setCountryName(singleBankDTO.getCountryName());
+        bank.setCountryISO2(singleBankDTO.getCountryISO2().toUpperCase());
+        bank.setCountryName(singleBankDTO.getCountryName().toUpperCase());
         bank.setIsHeadquarter(singleBankDTO.isHeadquarter());
         bank.setSwiftCode(singleBankDTO.getSwiftCode());
         return bank;
     }
 
+    private boolean isISO2CodeIllegal(String ISO2code){
+        return (ISO2code.length() != ISO2_LENGTH || ISO2code.isBlank());
+    }
+
     @Transactional
     public void saveBank(SingleBankDTO singleBankDTO) {
         SwiftCodeMethods.checkSwiftCodeLength(singleBankDTO.getSwiftCode());
+        if(isISO2CodeIllegal(singleBankDTO.getCountryISO2())) throw new IllegalISO2CodeException();
         BankEntity bank = mapSingleBankDTOtoBankEntity(singleBankDTO);
         Optional<BankEntity> b = bankRepository.findById(bank.getSwiftCode());
         if (b.isPresent()) throw new BankAlreadyInDataBaseException(bank.getSwiftCode());
@@ -65,7 +73,7 @@ public class BankService {
         return bankRepository.count();
     }
 
-    public BanksByCountryDTO getBanksByCountryDTO(String countryISO2) throws BankNotFoundException, WrongSwiftCodeException {
+    public BanksByCountryDTO getBanksByCountryDTO(String countryISO2) throws BankNotFoundException, IllegalSwiftCodeException {
         List<BankEntity> banks = bankRepository.findAllByCountryISO2(countryISO2);
         if (banks.isEmpty()) throw new BankNotFoundException(countryISO2, "countryISO2");
 

@@ -5,17 +5,16 @@ import com.swift.project.DTOs.HqDTO;
 import com.swift.project.DTOs.SingleBankDTO;
 import com.swift.project.exceptions.BankAlreadyInDataBaseException;
 import com.swift.project.exceptions.BankNotFoundException;
-import com.swift.project.exceptions.WrongSwiftCodeException;
+import com.swift.project.exceptions.IllegalISO2CodeException;
+import com.swift.project.exceptions.IllegalSwiftCodeException;
 import com.swift.project.service.BankService;
 import com.swift.project.service.XlsxParseService;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -47,7 +46,7 @@ class BankServiceUnitTests {
     @Test
     void testBankServiceGetByIdThrows() {
         assertThrows(BankNotFoundException.class, () -> bankService.getBank("abcdehijk"));
-        assertThrows(WrongSwiftCodeException.class, () -> bankService.getBank("axxxxxxxxxxxxxifshfhjfshfahfx"));
+        assertThrows(IllegalSwiftCodeException.class, () -> bankService.getBank("axxxxxxxxxxxxxifshfhjfshfahfx"));
     }
 
     @Test
@@ -76,8 +75,8 @@ class BankServiceUnitTests {
     @Test
     void testRemoveNonExistentThrows() {
         assertThrows(BankNotFoundException.class, () -> bankService.removeBank("12345678XXX"));
-        assertThrows(WrongSwiftCodeException.class, () -> bankService.removeBank("123X"));
-        assertThrows(WrongSwiftCodeException.class, () -> bankService.removeBank(null));
+        assertThrows(IllegalSwiftCodeException.class, () -> bankService.removeBank("123X"));
+        assertThrows(IllegalSwiftCodeException.class, () -> bankService.removeBank(null));
     }
 
     @Test
@@ -85,14 +84,17 @@ class BankServiceUnitTests {
         SingleBankDTO singleBankDTO = new SingleBankDTO(
                 " ",
                 " ",
-                " ",
-                " ",
+                "PL",
+                "POLAND",
                 true,
                 "BREXPLPWWAL"
         );
         assertThrows(BankAlreadyInDataBaseException.class, () -> bankService.saveBank(singleBankDTO));
         singleBankDTO.setSwiftCode("abc");
-        assertThrows(WrongSwiftCodeException.class, () -> bankService.saveBank(singleBankDTO));
+        assertThrows(IllegalSwiftCodeException.class, () -> bankService.saveBank(singleBankDTO));
+        singleBankDTO.setSwiftCode("BREXPLPWWXX");
+        singleBankDTO.setCountryISO2("-");
+        assertThrows(IllegalISO2CodeException.class, () -> bankService.saveBank(singleBankDTO));
     }
 
     @Test
@@ -125,8 +127,8 @@ class BankServiceUnitTests {
         String swiftCode = "jfa321222k";
         assertThrows(BankNotFoundException.class, () -> bankService.getHqDTO(swiftCode));
         String swiftCode2 = "abc";
-        assertThrows(WrongSwiftCodeException.class, () -> bankService.getHqDTO(swiftCode2));
-        assertThrows(WrongSwiftCodeException.class, () -> bankService.getHqDTO(null));
+        assertThrows(IllegalSwiftCodeException.class, () -> bankService.getHqDTO(swiftCode2));
+        assertThrows(IllegalSwiftCodeException.class, () -> bankService.getHqDTO(null));
     }
 
 }

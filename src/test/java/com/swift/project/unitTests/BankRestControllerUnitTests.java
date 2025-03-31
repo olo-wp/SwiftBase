@@ -3,9 +3,6 @@ package com.swift.project.unitTests;
 
 import com.swift.project.DTOs.*;
 import com.swift.project.controllers.BankRestController;
-import com.swift.project.controllers.BankRestControllerAdvice;
-import com.swift.project.exceptions.BankNotFoundException;
-import com.swift.project.exceptions.WrongSwiftCodeException;
 import com.swift.project.service.BankService;
 import com.swift.project.service.XlsxParseService;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;

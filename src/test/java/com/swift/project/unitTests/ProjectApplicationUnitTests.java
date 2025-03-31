@@ -10,9 +10,9 @@ import org.springframework.test.context.TestPropertySource;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class ProjectApplicationUnitTests {
 
-	@Test
-	void contextLoads() {
-	}
+    @Test
+    void contextLoads() {
+    }
 
 
 }

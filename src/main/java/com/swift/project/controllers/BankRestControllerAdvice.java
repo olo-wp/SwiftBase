@@ -1,28 +1,27 @@
 package com.swift.project.controllers;
 
-import com.swift.project.exceptions.BankAlreadyInDataBaseException;
-import com.swift.project.exceptions.BankNotFoundException;
-import com.swift.project.exceptions.IllegalISO2CodeException;
-import com.swift.project.exceptions.IllegalSwiftCodeException;
+import com.swift.project.DTOs.Message;
+import com.swift.project.exceptions.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class BankRestControllerAdvice {
     @ExceptionHandler(BankNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public final String bankNotFoundHandler(RuntimeException e){
-        return e.getMessage();
+    public final ResponseEntity<Message> bankNotFoundHandler(RuntimeException e) {
+        return new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(BankAlreadyInDataBaseException.class)
-    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    public final String bankAlreadyInBaseHandler(RuntimeException e){return e.getMessage();}
+    public final ResponseEntity<Message> bankAlreadyInBaseHandler(RuntimeException e) {
+        return new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.UNPROCESSABLE_ENTITY);
+    }
 
-    @ExceptionHandler({IllegalSwiftCodeException.class, IllegalISO2CodeException.class})
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public final String WrongSwiftCodeHandler(RuntimeException e){return e.getMessage();}
+    @ExceptionHandler({IllegalSwiftCodeException.class, IllegalISO2CodeException.class, IllegalSwiftCodeToHqMapping.class})
+    public final ResponseEntity<Message> WrongSwiftCodeHandler(RuntimeException e) {
+        return new ResponseEntity<>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
 
 }

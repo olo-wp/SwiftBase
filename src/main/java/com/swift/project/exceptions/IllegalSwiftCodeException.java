@@ -1,7 +1,9 @@
 package com.swift.project.exceptions;
 
+import com.swift.project.other.Messages;
+
 public class IllegalSwiftCodeException extends RuntimeException {
     public IllegalSwiftCodeException() {
-        super("Swift Code must be 8-11 characters long");
+        super(Messages.illegalSwiftCodeExceptionErrorMessage());
     }
 }

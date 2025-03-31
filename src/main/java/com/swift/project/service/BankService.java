@@ -8,7 +8,7 @@ import com.swift.project.data.BankEntity;
 import com.swift.project.exceptions.BankAlreadyInDataBaseException;
 import com.swift.project.exceptions.BankNotFoundException;
 import com.swift.project.exceptions.IllegalISO2CodeException;
-import com.swift.project.exceptions.IllegalSwiftCodeException;
+import com.swift.project.exceptions.IllegalSwiftCodeToHqMapping;
 import com.swift.project.other.SwiftCodeMethods;
 import com.swift.project.repo.BankRepository;
 import jakarta.transaction.Transactional;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.swift.project.other.constants.ISO2_LENGTH;
+import static com.swift.project.other.constants.*;
 
 @Service
 public class BankService {
@@ -40,16 +40,22 @@ public class BankService {
         return bank;
     }
 
-    private boolean isISO2CodeIllegal(String ISO2code){
-        return (ISO2code.length() != ISO2_LENGTH || ISO2code.isBlank());
+    private boolean isISO2CodeIllegal(String countryISO2) {
+        return (countryISO2 == null || countryISO2.length() != ISO2_LENGTH || countryISO2.isBlank());
     }
 
     @Transactional
-    public void saveBank(SingleBankDTO singleBankDTO) {
+    public void addBank(SingleBankDTO singleBankDTO) {
         SwiftCodeMethods.checkSwiftCodeLength(singleBankDTO.getSwiftCode());
-        if(isISO2CodeIllegal(singleBankDTO.getCountryISO2())) throw new IllegalISO2CodeException();
+
+        if (isISO2CodeIllegal(singleBankDTO.getCountryISO2())) throw new IllegalISO2CodeException();
+
+        if (!SwiftCodeMethods.isProperHqSuffixMapping(singleBankDTO.getSwiftCode(), singleBankDTO.isHeadquarter()))
+            throw new IllegalSwiftCodeToHqMapping();
+
         BankEntity bank = mapSingleBankDTOtoBankEntity(singleBankDTO);
         Optional<BankEntity> b = bankRepository.findById(bank.getSwiftCode());
+
         if (b.isPresent()) throw new BankAlreadyInDataBaseException(bank.getSwiftCode());
         bankRepository.save(bank);
     }
@@ -58,14 +64,14 @@ public class BankService {
     public void removeBank(String swiftCode) {
         SwiftCodeMethods.checkSwiftCodeLength(swiftCode);
         Optional<BankEntity> bank = bankRepository.findById(swiftCode);
-        if (bank.isEmpty()) throw new BankNotFoundException(swiftCode, "Swift Code");
+        if (bank.isEmpty()) throw new BankNotFoundException(SWIFT_CODE_IDENTIFIER, swiftCode);
         bankRepository.deleteById(swiftCode);
     }
 
     public SingleBankDTO getBank(String swiftCode) {
         SwiftCodeMethods.checkSwiftCodeLength(swiftCode);
         Optional<BankEntity> bank = bankRepository.findById(swiftCode);
-        if (bank.isEmpty()) throw new BankNotFoundException(swiftCode, "Swift Code");
+        if (bank.isEmpty()) throw new BankNotFoundException(SWIFT_CODE_IDENTIFIER, swiftCode);
         return mapBankToSingleBankDTO(bank.get());
     }
 
@@ -73,9 +79,10 @@ public class BankService {
         return bankRepository.count();
     }
 
-    public BanksByCountryDTO getBanksByCountryDTO(String countryISO2) throws BankNotFoundException, IllegalSwiftCodeException {
+    public BanksByCountryDTO getBanksByCountryDTO(String countryISO2) {
+        if(isISO2CodeIllegal(countryISO2)) throw new IllegalISO2CodeException();
         List<BankEntity> banks = bankRepository.findAllByCountryISO2(countryISO2);
-        if (banks.isEmpty()) throw new BankNotFoundException(countryISO2, "countryISO2");
+        if (banks.isEmpty()) throw new BankNotFoundException(ISO2_CODE_IDENTIFIER, countryISO2);
 
         String b_countryISO2 = banks.get(0).getCountryISO2();
         String b_countryName = banks.get(0).getCountryName();
@@ -96,7 +103,7 @@ public class BankService {
         List<BankEntity> banks = bankRepository.findBySwiftCodeStartingWith(SwiftCodeMethods.getCommonPrefix(swiftCode));
 
         BankEntity hq = banks.stream().filter(BankEntity::getIsHeadquarter).findFirst()
-                .orElseThrow(() -> new BankNotFoundException(swiftCode, "Swift Code"));
+                .orElseThrow(() -> new BankNotFoundException(SWIFT_CODE_IDENTIFIER, swiftCode));
 
         List<BranchDTO> branches = banks.stream().map(bank -> new BranchDTO(
                 bank.getAddress(),

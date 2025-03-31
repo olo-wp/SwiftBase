@@ -1,7 +1,9 @@
 package com.swift.project.exceptions;
 
-public class IllegalISO2CodeException extends RuntimeException{
-    public IllegalISO2CodeException(){
-        super("ISO2 code must be exactly 2 characters long");
+import com.swift.project.other.Messages;
+
+public class IllegalISO2CodeException extends RuntimeException {
+    public IllegalISO2CodeException() {
+        super(Messages.illegalISO2CodeExceptionErrorMessage());
     }
 }

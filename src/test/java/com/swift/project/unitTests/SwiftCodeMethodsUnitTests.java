@@ -8,14 +8,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class SwiftCodeMethodsUnitTests {
     @Test
-    void testCheckSwiftCodeLenght(){
+    void testCheckSwiftCodeLenght() {
         String swiftCode = "1234567";
         assertThrows(IllegalSwiftCodeException.class, () -> SwiftCodeMethods.checkSwiftCodeLength(swiftCode));
         String swiftCode2 = "1234567890123";
         assertThrows(IllegalSwiftCodeException.class, () -> SwiftCodeMethods.checkSwiftCodeLength(swiftCode2));
         assertThrows(IllegalSwiftCodeException.class, () -> SwiftCodeMethods.checkSwiftCodeLength(null));
         int i = 8;
-        while(i < 12){
+        while (i < 12) {
             StringBuilder swiftCodeBuilder = new StringBuilder();
             swiftCodeBuilder.setLength(i);
             assertDoesNotThrow(() -> SwiftCodeMethods.checkSwiftCodeLength(swiftCodeBuilder.toString()));
@@ -24,7 +24,7 @@ public class SwiftCodeMethodsUnitTests {
     }
 
     @Test
-    void testGetCommonPrefix(){
+    void testGetCommonPrefix() {
         String swiftCode = "1234567";
         assertThrows(IllegalSwiftCodeException.class, () -> SwiftCodeMethods.getCommonPrefix(swiftCode));
         assertThrows(IllegalSwiftCodeException.class, () -> SwiftCodeMethods.getCommonPrefix(null));
@@ -34,7 +34,7 @@ public class SwiftCodeMethodsUnitTests {
     }
 
     @Test
-    void testRepresentsHq(){
+    void testRepresentsHq() {
         String swiftCode = "1234567";
         assertThrows(IllegalSwiftCodeException.class, () -> SwiftCodeMethods.representsHQ(swiftCode));
         assertThrows(IllegalSwiftCodeException.class, () -> SwiftCodeMethods.representsHQ(null));

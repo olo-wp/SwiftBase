@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: spring_app
-    restart: no
+    restart: on-failure
     depends_on:
       - postgres
     environment:

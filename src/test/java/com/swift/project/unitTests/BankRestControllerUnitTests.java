@@ -18,7 +18,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.Mockito.*;
 
 @TestPropertySource("classpath:application-test.properties")
@@ -114,7 +115,7 @@ public class BankRestControllerUnitTests {
                 "TESTSWIFTADD"
         );
         ResponseEntity<Object> response = bankRestController.addBank(newSingleBankDTO);
-        verify(bankService, times(1)).saveBank(newSingleBankDTO);
+        verify(bankService, times(1)).addBank(newSingleBankDTO);
         assertEquals(200, response.getStatusCode().value());
         assertInstanceOf(Message.class, response.getBody());
     }

@@ -63,7 +63,7 @@ class BankServiceUnitTests {
 
         long size = bankService.getBankRepositorySize();
 
-        bankService.saveBank(singleBankDTO);
+        bankService.addBank(singleBankDTO);
 
         assert (size + 1 == bankService.getBankRepositorySize());
 
@@ -86,22 +86,22 @@ class BankServiceUnitTests {
                 " ",
                 "PL",
                 "POLAND",
-                true,
+                false,
                 "BREXPLPWWAL"
         );
-        assertThrows(BankAlreadyInDataBaseException.class, () -> bankService.saveBank(singleBankDTO));
+        assertThrows(BankAlreadyInDataBaseException.class, () -> bankService.addBank(singleBankDTO));
         singleBankDTO.setSwiftCode("abc");
-        assertThrows(IllegalSwiftCodeException.class, () -> bankService.saveBank(singleBankDTO));
+        assertThrows(IllegalSwiftCodeException.class, () -> bankService.addBank(singleBankDTO));
         singleBankDTO.setSwiftCode("BREXPLPWWXX");
         singleBankDTO.setCountryISO2("-");
-        assertThrows(IllegalISO2CodeException.class, () -> bankService.saveBank(singleBankDTO));
+        assertThrows(IllegalISO2CodeException.class, () -> bankService.addBank(singleBankDTO));
     }
 
     @Test
     void testFindByCountryThrowsByWrongISO2() {
         String countryCode = "WB";
         assertThrows(BankNotFoundException.class, () -> bankService.getBanksByCountryDTO(countryCode));
-        assertThrows(BankNotFoundException.class, () -> bankService.getBanksByCountryDTO(null));
+        assertThrows(IllegalISO2CodeException.class, () -> bankService.getBanksByCountryDTO(null));
     }
 
     @Test
@@ -115,15 +115,15 @@ class BankServiceUnitTests {
     }
 
     @Test
-    void testGetHqDTOReturn(){
+    void testGetHqDTOReturn() {
         String swiftCode = "BREXPLPWXXX";
         HqDTO HqDTO = bankService.getHqDTO(swiftCode);
         assertTrue(HqDTO.isHeadquarter());
-        assert(HqDTO.getBranches().size() == 3);
+        assert (HqDTO.getBranches().size() == 3);
     }
 
     @Test
-    void testGetHqDTOThrowsByWrongSwiftCode(){
+    void testGetHqDTOThrowsByWrongSwiftCode() {
         String swiftCode = "jfa321222k";
         assertThrows(BankNotFoundException.class, () -> bankService.getHqDTO(swiftCode));
         String swiftCode2 = "abc";

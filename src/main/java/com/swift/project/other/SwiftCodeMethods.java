@@ -11,11 +11,16 @@ public class SwiftCodeMethods {
     }
 
     public static void checkSwiftCodeLength(String swiftCode) throws IllegalSwiftCodeException {
-        if (swiftCode == null || swiftCode.length() < 8 || swiftCode.length() > 11) throw new IllegalSwiftCodeException();
+        if (swiftCode == null || swiftCode.length() < 8 || swiftCode.length() > 11)
+            throw new IllegalSwiftCodeException();
     }
 
     public static boolean representsHQ(String swiftCode) throws IllegalSwiftCodeException {
         checkSwiftCodeLength(swiftCode);
         return swiftCode.endsWith(HQ_SUFFIX);
+    }
+
+    public static boolean isProperHqSuffixMapping(String swiftCode, boolean isHq) {
+        return (swiftCode.endsWith(HQ_SUFFIX) && isHq) || (!swiftCode.endsWith(HQ_SUFFIX) && !isHq);
     }
 }

@@ -119,7 +119,7 @@ class BankServiceUnitTests {
         String swiftCode = "BREXPLPWXXX";
         HqDTO HqDTO = bankService.getHqDTO(swiftCode);
         assertTrue(HqDTO.isHeadquarter());
-        assert(HqDTO.getBranches().size() == 2);
+        assert(HqDTO.getBranches().size() == 3);
     }
 
     @Test

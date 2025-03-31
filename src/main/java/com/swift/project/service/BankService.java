@@ -90,7 +90,7 @@ public class BankService {
         BankEntity hq = banks.stream().filter(BankEntity::getIsHeadquarter).findFirst()
                 .orElseThrow(() -> new BankNotFoundException(swiftCode, "Swift Code"));
 
-        List<BranchDTO> branches = banks.stream().map(bank -> new BranchDTO(
+        List<BranchDTO> branches = banks.stream().filter(bank -> !bank.equals(hq)).map(bank -> new BranchDTO(
                 bank.getAddress(),
                 bank.getBankName(),
                 bank.getCountryISO2(),

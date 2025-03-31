@@ -1,4 +1,4 @@
-package com.swift.project;
+package com.swift.project.unitTests;
 
 import com.swift.project.DTOs.BanksByCountryDTO;
 import com.swift.project.DTOs.HqDTO;
@@ -56,7 +56,7 @@ class BankServiceUnitTests {
                 " ",
                 "Rich People Bank",
                 "LI",
-                "Liechtenstein",
+                "LIECHTENSTEIN",
                 true,
                 "12345678XXX"
         );
@@ -117,7 +117,7 @@ class BankServiceUnitTests {
         String swiftCode = "BREXPLPWXXX";
         HqDTO HqDTO = bankService.getHqDTO(swiftCode);
         assertTrue(HqDTO.isHeadquarter());
-        assert(HqDTO.getBranches().size() == 3);
+        assert(HqDTO.getBranches().size() == 2);
     }
 
     @Test

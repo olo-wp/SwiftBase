@@ -1,4 +1,4 @@
-package com.swift.project;
+package com.swift.project.unitTests;
 
 import com.swift.project.exceptions.WrongSwiftCodeException;
 import com.swift.project.other.SwiftCodeMethods;

@@ -12,17 +12,16 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class BankRestControllerAdvice {
     @ExceptionHandler(BankNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    String bankNotFoundHandler(RuntimeException e){
+    public final String bankNotFoundHandler(RuntimeException e){
         return e.getMessage();
     }
 
     @ExceptionHandler(BankAlreadyInDataBaseException.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    String bankAlreadyInBaseHandler(RuntimeException e){return e.getMessage();}
+    public final String bankAlreadyInBaseHandler(RuntimeException e){return e.getMessage();}
 
     @ExceptionHandler(WrongSwiftCodeException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    String WrongSwiftCodeHandler(RuntimeException e){return e.getMessage();}
-
+    public final String WrongSwiftCodeHandler(RuntimeException e){return e.getMessage();}
 
 }

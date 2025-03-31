@@ -1,6 +1,5 @@
 package com.swift.project.DTOs;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +14,6 @@ public class HqDTO {
     private String bankName;
     private String countryISO2;
     private String countryName;
-    @JsonProperty("isHeadquarter")
     private Boolean isHeadquarter;
     private String swiftCode;
     private List<BranchDTO> branches;

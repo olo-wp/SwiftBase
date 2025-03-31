@@ -13,7 +13,6 @@ public class SingleBankDTO {
     private String bankName;
     private String countryISO2;
     private String countryName;
-    @JsonProperty("isHeadquarter")
     private Boolean isHeadquarter;
     private String swiftCode;
 }
